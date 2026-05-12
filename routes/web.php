@@ -1,10 +1,20 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StudentController; // 1. Panggil Controllernya
 
-// 2. Ganti rute '/' yang tadinya nampilin 'welcome' jadi nampilin 'index' dari StudentController
-Route::get('/', [StudentController::class, 'index']);
+Route::get('/', function () {
+    return view('welcome');
+});
 
-// 3. Biar fitur CRUD lainnya juga jalan
-Route::resource('students', StudentController::class);
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
